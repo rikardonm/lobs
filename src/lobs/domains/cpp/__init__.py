@@ -5,3 +5,9 @@
 # pyright: reportUnusedImport = false
 from .project import ManagedApplication, Library
 from .compiler_options import CompilationFlags
+
+__all__ = [
+    "ManagedApplication",
+    "Library",
+    "CompilationFlags",
+]
