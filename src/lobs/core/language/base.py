@@ -1,12 +1,14 @@
+from collections.abc import Sequence
 from dataclasses import dataclass
 import typing as t
 from pathlib import Path
 
 
-SOURCE: t.TypeAlias = Path | t.Generator[Path, None, None]
+SOURCE_GEN: t.TypeAlias = t.Generator[Path, None, None]
+SOURCES: t.TypeAlias = Sequence[Path | SOURCE_GEN] | SOURCE_GEN
 
 
-def _flatten_list(values: list[SOURCE]) -> list[Path]:
+def _flatten_list(values: SOURCES) -> list[Path]:
     ret: list[Path] = []
     for item in values:
         if isinstance(item, Path):
@@ -16,7 +18,7 @@ def _flatten_list(values: list[SOURCE]) -> list[Path]:
     return ret
 
 
-def expand_sources(files: list[SOURCE]) -> list[Path]:
+def expand_sources(files: SOURCES) -> list[Path]:
     all_files = _flatten_list(files)
     if any(not pp.is_file() for pp in all_files):
         raise ValueError("Some source paths are not files.")

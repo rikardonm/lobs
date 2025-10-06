@@ -13,17 +13,16 @@ class Version:
     patch: int
     extra: str | None = None
 
-    VERSION_REGEX = re.compile(
+    SEMVER_REGEX = re.compile(
         r'^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)'
-        r'(?:-(?P<extra>.+))?$'
+        r'(?:[-.](?P<extra>.+))?$'
     )
 
     @classmethod
     def parse(cls, version_str: str) -> t.Self:
-        match = cls.VERSION_REGEX.match(version_str)
+        match = cls.SEMVER_REGEX.match(version_str)
         if not match:
             raise ValueError(f"Invalid version string: {version_str}")
-
         major = int(match.group('major'))
         minor = int(match.group('minor'))
         patch = int(match.group('patch'))

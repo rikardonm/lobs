@@ -13,7 +13,7 @@ class Project:
     """
 
 
-TP = t.TypeVar("TP", bound=Project)
+TP = t.TypeVar("TP", bound=Project, covariant=True)
 
 
 @dataclasses.dataclass
@@ -28,7 +28,7 @@ class ProjectMeta:
     """The version of the project."""
     short_description: str | None = None
     """A short description of the project."""
-    dependencies: list[t.Self] = t.cast(list[t.Self], dataclasses.field(default_factory=list))
-    """The list of project dependencies."""
-    exporter_configuration: list[ExporterConfiguration] = t.cast(list[ExporterConfiguration], dataclasses.field(default_factory=list))
+    exporter_configuration: list[ExporterConfiguration] = t.cast(
+        list[ExporterConfiguration], dataclasses.field(default_factory=list)
+    )
     """The list of exporter-specific configuration options."""

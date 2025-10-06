@@ -8,7 +8,7 @@ _tf = Path(__file__)
 
 app = lobs.Package(
     lobs.ProjectMeta(_tf.stem, lobs.Version.parse(lobs.__version__)),
-    lobs.cpp.ManagedApplication(_tf.with_name("src") / "main.cpp"),
+    lobs.cpp.ManagedApplication([_tf.with_name("src") / "main.cpp"]),
 )
 """A simple C++ application project with a single source file, no dependencies and default flags."""
 

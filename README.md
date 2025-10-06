@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 
 app = lobs.Package(
     lobs.ProjectMeta("example-app", lobs.Version(0, 0, 1, "rc1")),
-    lobs.cpp.ManagedApplication(main_cpp),
+    lobs.cpp.ManagedApplication([main_cpp]),
 )
 """A simple C++ application project with a single source file,
 no dependencies and default flags."""
@@ -59,6 +59,12 @@ pip install lobs
 ## Design
 
 Various design choices were heavily based on the Zen of Python.
+
+
+### All files exist in the disk
+
+A limitation imposed by the framework to the Python language is that all executed code must be sourced from a file in disk.
+The rationale is the commonuse of the module's path by the exporters.
 
 
 ### Explicit library imports in project files

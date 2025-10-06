@@ -72,11 +72,18 @@ class TestVersionParsing:
         assert version.minor == 888
         assert version.patch == 777
 
+    def test_parse_pep440_style(self):
+        """Test parsing a PEP 440 style version."""
+        version = Version.parse("1.2.3.dev4+g5678")
+        assert version.major == 1
+        assert version.minor == 2
+        assert version.patch == 3
+        assert version.extra == "dev4+g5678"
+
     @pytest.mark.parametrize("invalid_version", [
         "",                          # Empty string
         "1",                         # Missing components
         "1.2",                       # Missing patch
-        "1.2.3.4",                   # Too many components
         "v1.2.3",                    # Prefix not allowed
         "1.2.3-",                    # Trailing dash
         "01.2.3",                    # Leading zeros not allowed
@@ -213,7 +220,7 @@ class TestVersionRegex:
 
     def test_regex_basic_match(self):
         """Test regex matches basic version format."""
-        match = Version.VERSION_REGEX.match("1.2.3")
+        match = Version.SEMVER_REGEX.match("1.2.3")
         assert match is not None
         assert match.group('major') == '1'
         assert match.group('minor') == '2'
@@ -222,7 +229,7 @@ class TestVersionRegex:
 
     def test_regex_with_extra_match(self):
         """Test regex matches version with extra."""
-        match = Version.VERSION_REGEX.match("1.2.3-alpha")
+        match = Version.SEMVER_REGEX.match("1.2.3-alpha")
         assert match is not None
         assert match.group('major') == '1'
         assert match.group('minor') == '2'
@@ -231,6 +238,6 @@ class TestVersionRegex:
 
     def test_regex_no_match_invalid_format(self):
         """Test regex doesn't match invalid formats."""
-        assert Version.VERSION_REGEX.match("1.2") is None
-        assert Version.VERSION_REGEX.match("v1.2.3") is None
-        assert Version.VERSION_REGEX.match("01.2.3") is None
+        assert Version.SEMVER_REGEX.match("1.2") is None
+        assert Version.SEMVER_REGEX.match("v1.2.3") is None
+        assert Version.SEMVER_REGEX.match("01.2.3") is None

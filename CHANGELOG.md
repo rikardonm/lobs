@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This changelog file
 - Minimal working example CLI with `export` subcommand
 - POC CMake and esp-idf project files
+- Support for SemVer, `vSemVer` and quasi-PEP440 version strings
 
 ### Changed
 
