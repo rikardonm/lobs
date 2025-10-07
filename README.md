@@ -1,7 +1,7 @@
 # lobs
 
-[![PyPI - Version](https://img.shields.io/pypi/v/lobs.svg)](https://pypi.org/project/lobs)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/lobs.svg)](https://pypi.org/project/lobs)
+[![PyPI - Version](https://img.shields.io/pypi/v/py-lobs.svg)](https://pypi.org/project/py-lobs)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-lobs.svg)](https://pypi.org/project/py-lobs)
 
 `lobs` is a framework that aims to provide an easy application and library project generator.
 
@@ -9,12 +9,15 @@
 A simple C++ application example
 
 ```python
+# simple-example.py
 from pathlib import Path
 
 import lobs
 
+
 main_cpp = Path(__file__).with_name("main.cpp")
-main_cpp.write_text("""
+
+main_cpp.write_text(r"""
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -27,7 +30,7 @@ int main(int argc, char *argv[])
 """)
 
 app = lobs.Package(
-    lobs.ProjectMeta("example-app", lobs.Version(0, 0, 1, "rc1")),
+    lobs.ProjectMeta("example-app", lobs.Version(0, 0, 1)),
     lobs.cpp.ManagedApplication([main_cpp]),
 )
 """A simple C++ application project with a single source file,
@@ -41,6 +44,27 @@ app.project.compilation_flags['w_extra'] = True
 app.project.compilation_flags['w_comment'] = True
 ```
 
+And use it like so:
+
+```
+~/lobs » lobs simple-example.py export cmake
+Project: simple-example.py
+
+~/lobs » cmake -B build .
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/ricardo/git/lobs/build
+
+~/lobs » cmake --build build
+[ 50%] Building CXX object CMakeFiles/example-app.dir/main.cpp.o
+[100%] Linking CXX executable example-app
+[100%] Built target example-app
+
+~/lobs » ./build/example-app
+Howdy!
+```
+
+
 -----
 
 ## Table of Contents
@@ -53,7 +77,7 @@ app.project.compilation_flags['w_comment'] = True
 ## Installation
 
 ```console
-pip install lobs
+python3 -m pip install lobs
 ```
 
 ## Design
