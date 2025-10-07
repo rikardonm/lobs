@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "lobs"
+name = "py-lobs"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
