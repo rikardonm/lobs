@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "py-lobs"
 dynamic = ["version"]
-description = ''
+description = 'lobs is a framework that aims to provide an easy application and library project generator.'
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
