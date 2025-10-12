@@ -45,6 +45,9 @@ extra-dependencies = [
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/lobs tests}"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/lobs"]
+
 [tool.coverage.run]
 source_pkgs = ["lobs", "tests"]
 branch = true
