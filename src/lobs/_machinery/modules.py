@@ -3,6 +3,7 @@
 See: https://stackoverflow.com/questions/67631/how-can-i-import-a-module-dynamically-given-the-full-path
 """
 from pathlib import Path
+import sys
 from types import ModuleType
 import importlib.util
 
@@ -12,6 +13,10 @@ def import_module(module_name: str, file: Path) -> ModuleType:
     file = file.absolute()
     if not file.exists():
         raise FileNotFoundError(f"File {file} does not exist.")
+    # Import the root project's path
+    p = str(file.parent.absolute())
+    if p not in sys.path:
+        sys.path.insert(0, p)
     spec = importlib.util.spec_from_file_location(module_name, file)
     assert spec is not None, f"Could not load spec for module {module_name} at {file}"
     module = importlib.util.module_from_spec(spec)

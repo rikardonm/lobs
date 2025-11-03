@@ -3,11 +3,13 @@ from dataclasses import dataclass
 import typing as t
 from pathlib import Path
 
+from lobs.domains import cpp
+
 from . import syntax
 
 
 class CmakeFileWriter:
-    INDENT = '    '
+    INDENT = "    "
     MAX_ARG_LEN = 20
 
     def _should_export_single_line(self, args: list[str]) -> bool:
@@ -18,12 +20,16 @@ class CmakeFileWriter:
         self._write_newline = True
         self.call("cmake_minimum_required", VERSION=min_version)
 
+    def __newline(self) -> None:
+        if self._write_newline:
+            self.cnt.append("")
+
     def write_to_dir(self, outdir: Path) -> Path:
         outfile = outdir / "CMakeLists.txt"
         outfile.parent.mkdir(parents=True, exist_ok=True)
-        if self.cnt[-1] != '':
-            self.cnt.append('')
-        outfile.write_text('\n'.join(self.cnt))
+        # Ensure the file ends with a newline
+        nl = "\n" if self.cnt and self.cnt[-1] != "" else ""
+        outfile.write_text("\n".join(self.cnt) + nl)
         return outfile
 
     @contextlib.contextmanager
@@ -32,24 +38,27 @@ class CmakeFileWriter:
         self._write_newline = False
         yield
         self._write_newline = True
+        if not self.cnt[-1] == "":
+            self.__newline()
 
     def set(self, var: syntax.Variable, value: syntax.V_T | syntax.LV_T | None) -> syntax.Variable:
         if value is None:
             self.cnt.append(f"unset({var.name})")
+            self.__newline()
         elif isinstance(value, (bool, int, str, float, Path)):
             self.cnt.append(f"set({var.name} {self.resolve_value(value)})")
+            self.__newline()
         else:
             values = list(self.resolve_value(v) for v in value)
             if not values:
                 self.set(var, None)
             elif self._should_export_single_line(values):
-                self.set(var, ' '.join(values))
+                self.set(var, " ".join(values))
             else:
                 self.cnt.append(f"set({var.name}")
                 self.cnt.extend(f"{self.INDENT}{v}" for v in values)
                 self.cnt.append(")")
-        if self._write_newline:
-            self.cnt.append("")
+                self.__newline()
         return var
 
     @classmethod
@@ -64,7 +73,13 @@ class CmakeFileWriter:
             return str(v)
         if isinstance(v, Path):
             return str(v)
-        return ' '.join(str(x) for x in v)
+        return " ".join(str(x) for x in v)
+
+    def _escape_argument(self, arg: syntax.VTT) -> syntax.VTT:
+        if isinstance(arg, str):
+            if " " in arg or '"' in arg or "'" in arg or "(" in arg or ")" in arg:
+                return f'"{arg.replace("\"", "\\\"")}"'
+        return arg
 
     def make_project(
         self,
@@ -77,10 +92,58 @@ class CmakeFileWriter:
         if version is not None:
             opt_args["VERSION"] = version
         if languages is not None:
-            opt_args["LANGUAGES"] = ' '.join(languages)
+            opt_args["LANGUAGES"] = " ".join(languages)
         opt_args.update(kwargs)
-        self.call("project", name, **opt_args)
-        return syntax.Project(name=name)
+        prj = syntax.Project(name=name)
+        opt_args = {k: self._escape_argument(v) for k, v in opt_args.items() if v is not None}
+        self.call("project", prj.name, **opt_args)
+        return prj
+
+    def add_executable(self, name: str, app: cpp.project.SimpleManagedApplication) -> syntax.Executable:
+        exe = syntax.Executable(name=name)
+        assert app.source_files, "An executable must have at least one source file."
+        self.call("add_executable", exe.name, *(str(x) for x in app.source_files))
+        return exe
+
+    def add_library(self, name: str, lib: cpp.project.SimpleLibrary) -> syntax.Library:
+        library = syntax.Library(name=name)
+        if lib.source_files:
+            self.call("add_library", library.name, "STATIC", *(str(x) for x in lib.source_files))
+            if lib.public_includes:
+                self.call(
+                    "target_include_directories",
+                    library.name,
+                    "PUBLIC",
+                    *(str(x) for x in lib.public_includes),
+                )
+            if lib.private_includes:
+                self.call(
+                    "target_include_directories",
+                    library.name,
+                    "PRIVATE",
+                    *(str(x) for x in lib.private_includes),
+                )
+        else:
+            self.call("add_library", library.name, "INTERFACE")
+            if lib.public_includes:
+                self.call(
+                    "target_include_directories",
+                    library.name,
+                    "INTERFACE",
+                    *(str(x) for x in lib.public_includes),
+                )
+            if lib.private_includes:
+                raise RuntimeError("An interface library cannot have private includes.")
+        return library
+
+    def add_subdirectory(
+        self,
+        source_dir: Path,
+    ) -> None:
+        self.call("add_subdirectory", str(source_dir))
+
+    def target_link_library(self, exe: syntax.Executable | syntax.Library, lib: syntax.Library) -> None:
+        self.call("target_link_libraries", exe.name, lib.name)
 
     def call(
         self,
@@ -92,24 +155,21 @@ class CmakeFileWriter:
         _kwargs = [f"{k} {self.resolve_value(v)}" for k, v in kwargs.items()]
         resolved_args = _args + _kwargs
         if self._should_export_single_line(resolved_args):
-            self.cnt.append(f'{name}(' + ' '.join(resolved_args) + ')')
+            self.cnt.append(f"{name}(" + " ".join(resolved_args) + ")")
         else:
             self.cnt.append(f"{name}(")
             self.cnt.extend((self.INDENT + x for x in resolved_args))
             self.cnt.append(")")
-        if self._write_newline:
-            self.cnt.append("")
+        self.__newline()
 
-    def variable(self, name: str) -> '_Variable':
+    def variable(self, name: str) -> "_Variable":
         return _Variable(_writer=self, _var=syntax.Variable(name=name))
 
-    def list(self, name: str) -> '_List':
+    def list(self, name: str) -> "_List":
         return _List(_writer=self, _var=syntax.Variable(name=name))
 
     def include(self, filepath: Path | str) -> None:
         self.call("include", str(filepath))
-        if self._write_newline:
-            self.cnt.append("")
 
 
 @dataclass

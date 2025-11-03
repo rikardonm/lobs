@@ -35,24 +35,7 @@ class CompilationFlags:
     def __setitem__(self, key: str, value: bool | None) -> None:
         if not key.startswith('w_'):
             raise KeyError(f"Invalid compilation flag '{key}'. Must start with 'w_'.")
-        if key not in self.__dataclass_fields__:
-            # Create a new field dynamically
-            field = dataclasses.Field(
-                default=None,
-                default_factory=lambda: None,
-                init=True,
-                repr=True,
-                hash=None,
-                compare=True,
-                metadata={},
-                kw_only=False,
-            )
-            field.name = key
-            field.type = bool | None
-            self.__dataclass_fields__[key] = field
-            setattr(self, key, value)
-        else:
-            setattr(self, key, value)
+        setattr(self, key, value)
 
     def get_all(self) -> list[dataclasses.Field[t.Any]]:
         # although it would be very nice and clean to use `dataclasses.fields(self)`

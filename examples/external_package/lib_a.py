@@ -1,0 +1,12 @@
+from lobs import Package, Version, cpp, Path
+
+
+class LibA(
+    Package,
+    version=Version(0, 0, 1),
+    description="A sample configurable library.",
+):
+    app = cpp.project.SimpleLibrary(
+        source_files=[Path(__file__).parent / "lib_a" / "lib_a.cpp"],
+        public_includes=[Path(__file__).parent / "lib_a"],
+    )

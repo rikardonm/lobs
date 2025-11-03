@@ -11,6 +11,12 @@
 		"flake8.args": [
 			"--max-line-length=120",
 		],
+		"black-formatter.args": [
+			"--line-length",
+			"120",
+			"--target-version",
+			"py312"
+		],
 		"explorer.excludeGitIgnore": true,
 		"files.exclude": {
 			"**/.git": true,
@@ -18,6 +24,9 @@
 			"**/.hg": true,
 			"**/.DS_Store": true,
 			"**/Thumbs.db": true,
+		},
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.black-formatter"
 		}
 	}
 }

@@ -2,44 +2,39 @@ import abc
 from pathlib import Path
 import typing as t
 
-from lobs.core import package as pm
+from lobs._machinery.logger import module_logger
+from lobs.core.resolver import Node
 from .configuration import ExporterConfiguration
 
 
 T = t.TypeVar('T', bound=ExporterConfiguration)
 
 
-class BaseExporter(abc.ABC, t.Generic[T]):
-    def __init__(self, package: pm.IPackage) -> None:
-        self.package = package
-        """The project top-level module to export."""
-        # We explicitly look for the exact type here, to avoid issues with subclasses
-        # that is, if an exporter "reuses" the configuration of another exporter,
-        # we don't want to pick that up here.
-        provided_config = next(
-            (c for c in package.meta.exporter_configuration if type(c) is self.config_cls),
-            None,
-        )
-        self.config = t.cast(T, provided_config) or self.config_cls()
-        """The configuration for the exporter."""
-
-    @property
-    def project_folder(self) -> Path:
-        """The folder where the project is located (the parent of the module file)."""
-        return self.package.package_path.parent
+class BaseExporter(abc.ABC):
+    def __init__(self, root_node: Node, base_output_path: Path) -> None:
+        self.logger = module_logger.getChild(f"{self.__class__.__name__}")
+        self.base_output_path = base_output_path
+        self.root_node = root_node
+        self._flat_node_list: list[Node] = []
+        self.__collect_dependencies_for_node(self.root_node)
 
     @abc.abstractmethod
-    def export(self) -> None:
+    def _export_node(self, node: Node) -> None:
         """Export the project to the desired format."""
 
-    KNOWN: dict[str, type[t.Self]] = {}
-    """A mapping of known exporter tags to their corresponding classes."""
+    def __collect_dependencies_for_node(self, node: Node) -> None:
+        if node in self._flat_node_list:
+            return
+        self._flat_node_list.append(node)
+        for child in node.children:
+            self.__collect_dependencies_for_node(child)
 
-    def __init_subclass__(cls, tag: str, config_cls: type[T]) -> None:
-        cls.tag = tag
-        cls.config_cls = config_cls
-        cls.KNOWN[tag] = cls
-        return super().__init_subclass__()
+    def export(self) -> None:
+        """Export the project to the desired format."""
+        # traverse and build the nodes; but we build them bottom-first
+        # and so, for that, we traverse the tree from the root and collect all dependencies
+        for node in self._flat_node_list[::-1]:
+            self._export_node(node)
 
 
-IExporter: t.TypeAlias = BaseExporter[ExporterConfiguration]
+IExporter: t.TypeAlias = BaseExporter

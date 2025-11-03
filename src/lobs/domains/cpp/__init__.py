@@ -3,11 +3,10 @@
 # SPDX-License-Identifier: MIT
 # flake8: noqa: F401
 # pyright: reportUnusedImport = false
-from .project import ManagedApplication, Library
+from . import project
 from .compiler_options import CompilationFlags
 
 __all__ = [
-    "ManagedApplication",
-    "Library",
+    "project",
     "CompilationFlags",
 ]

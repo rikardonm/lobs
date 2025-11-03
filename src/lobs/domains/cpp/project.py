@@ -1,34 +1,41 @@
-import dataclasses
 import typing as t
 
-from lobs.core.language.base import SOURCES
-from lobs.core.project import Project
+import pydantic
+
+from lobs.domains.files import SOURCES
+from lobs.core.package.base import Project, Package
 from lobs.domains.cpp.compiler_options import CompilationFlags
 
 
-@dataclasses.dataclass
-class ManagedApplication(Project):
-    """This class represents an application that is managed by an underlying system (e.g. Linux, Windows, macOS)."""
-    source_files: SOURCES
-    """List of source files for the application."""
-    include_dirs: SOURCES = t.cast(SOURCES, dataclasses.field(default_factory=list))
-    """List of include directories for the library."""
-    cxx_standard: int = 23
-    """The C++ standard version to use for compiling the application."""
-    compilation_flags: CompilationFlags = dataclasses.field(default_factory=CompilationFlags)
-    """The compilation flags to use for compiling the application."""
-    executable_name: str | None = None
-    """The name of the output executable. If None, defaults to the project name."""
-
-
-@dataclasses.dataclass
-class Library(Project):
+class SimpleEntity(Project):
     """This class represents a C++ library project."""
-    include_dirs: SOURCES = t.cast(SOURCES, dataclasses.field(default_factory=list))
+    public_includes: SOURCES = t.cast(SOURCES, pydantic.Field(default_factory=list))
     """List of include directories for the library."""
-    source_files: SOURCES = t.cast(SOURCES, dataclasses.field(default_factory=list))
+    source_files: SOURCES = t.cast(SOURCES, pydantic.Field(default_factory=list))
     """List of source files for the library."""
+    private_includes: SOURCES = t.cast(SOURCES, pydantic.Field(default_factory=list))
+    """List of private include directories for the library."""
+
     cxx_standard: int = 23
     """The C++ standard version to use for compiling the library."""
-    compilation_flags: CompilationFlags = dataclasses.field(default_factory=CompilationFlags)
+    compilation_flags: CompilationFlags = pydantic.Field(default_factory=CompilationFlags)
     """The compilation flags to use for compiling the application."""
+    artifact_name: str | None = None
+    """The name of the output library. If None, defaults to the project name."""
+    linked_libraries: list[type[Package]] = t.cast(list[type[Package]], pydantic.Field(default_factory=list))
+    """List of libraries to link against."""
+
+    def get_dependencies(self) -> 'list[type[Package]]':
+        return [lib for lib in self.linked_libraries]
+
+
+class SimpleLibrary(SimpleEntity):
+    pass
+
+
+class SimpleManagedApplication(SimpleEntity):
+    pass
+
+
+class EmbeddedApplication(SimpleEntity):
+    pass

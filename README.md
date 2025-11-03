@@ -4,6 +4,16 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-lobs.svg)](https://pypi.org/project/py-lobs)
 
 `lobs` is a framework that aims to provide an easy application and library project generator.
+The simple drivers for this are the need to have a single C++ source file used in a project,
+used with multiple targets (i.e. ESP IDF, Cmake, Zephyr, etc).
+
+The pillars for the library are:
+
+- Every library is a package
+- Every application is a plain script
+- Dependency fetching and version resolution is done by Python's package manager (e.g. pip)
+- Every package has only one library or application
+
 
 
 A simple C++ application example
@@ -80,7 +90,33 @@ Howdy!
 python3 -m pip install lobs
 ```
 
-## Design
+## Architecture
+
+The basis for the package is the sequence of steps:
+
+- Create the skeleton for the declared entity (app, lib, etc)
+- Recursively populate the required packages to fullfil the entities in the skeleton
+- Inflate the skeleton by generating any required configuration files
+- Execute operation (e.g. export to CMake)
+
+
+## Flow
+
+The diagram below shows the sequence of operations the framework executes on the given package.
+
+```mermaid
+graph TD;
+    Start-->A(Create);
+    A-->B(Configure);
+    B-->C(Prepare Files);
+    C-->D(Materialize);
+    D-->E(Exporter);
+    E-->F(CMake);
+    E-->G(ESP IDF);
+```
+
+
+## Design Inspirations
 
 Various design choices were heavily based on the Zen of Python.
 
@@ -88,18 +124,18 @@ Various design choices were heavily based on the Zen of Python.
 ### All files exist in the disk
 
 A limitation imposed by the framework to the Python language is that all executed code must be sourced from a file in disk.
-The rationale is the commonuse of the module's path by the exporters.
+The rationale is the common use of the module's path by the exporters.
 
 
 ### Explicit library imports in project files
 
 The main reason for this is the reuse of editor and linting tools support.
-Futhermore, it provides clarity to the user of what is being used and where it comes from.
+Furthermore, it provides clarity to the user of what is being used and where it comes from.
 
 
 ### Everything is monkey-patchable
 
-In standard Python, almost everything is monkey-patcheable by the user.
+In standard Python, almost everything is monkey-patchable by the user.
 By design, the library aims to keep it that way.
 
 > "C makes it easy to shoot yourself in the foot; C++ makes it harder, but when you do it blows your whole leg off".

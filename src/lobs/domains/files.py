@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from dataclasses import dataclass
 import typing as t
 from pathlib import Path
 
@@ -23,9 +22,3 @@ def expand_sources(files: SOURCES) -> list[Path]:
     if any(not pp.is_file() for pp in all_files):
         raise ValueError("Some source paths are not files.")
     return all_files
-
-
-@dataclass
-class Language:
-    def __init_subclass__(cls, name: str) -> None:
-        cls.name = name

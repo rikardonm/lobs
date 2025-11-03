@@ -3,17 +3,23 @@
 # SPDX-License-Identifier: MIT
 # flake8: noqa: F401
 # pyright: reportUnusedImport = false
-from lobs.core.package import Package
+from pathlib import Path
+
+from lobs.core.package.base import Package
 from lobs.core.version import Version
-from lobs.core.project import ProjectMeta
 from lobs.domains import cpp
 from lobs.version import __version__, __version_tuple__
+from lobs._machinery.logger import module_logger
+from lobs.core.package import providers
+
 
 __all__ = [
+    "Path",
     "Package",
     "Version",
-    "ProjectMeta",
     "cpp",
     "__version__",
     "__version_tuple__",
+    "module_logger",
+    "providers",
 ]

@@ -8,6 +8,9 @@ V_T: t.TypeAlias = int | str | bool | float | Path
 LV_T: t.TypeAlias = Iterable[V_T]
 
 
+VTT = t.TypeVar('VTT', int, str, bool, float, Path)
+
+
 @dataclass
 class Variable:
     name: str
@@ -18,6 +21,16 @@ class Variable:
 
 @dataclass
 class Project:
+    name: str
+
+
+@dataclass
+class Executable:
+    name: str
+
+
+@dataclass
+class Library:
     name: str
 
 
