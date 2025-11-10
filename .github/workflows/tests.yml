@@ -13,39 +13,50 @@ jobs:
         steps:
         - uses: actions/checkout@v4
         - name: "Install dependencies"
-          run: |
-            pip install pytest
-            python -m pip install --upgrade pip
-            pip install -e .
+          run: python3 -m pip install ".[test]"
         - name: "Run tests"
           run: pytest
     build-cmake:
         runs-on: ubuntu-latest
-        container: python:3.12
+        container: ghcr.io/${{ github.repository }}/base-cmake-gcc:latest
+        defaults:
+          run:
+            shell: bash
         steps:
-        - uses: actions/checkout@v4
-        - name: "Install dependencies"
-          run: |
-            pip install cmake
-            python -m pip install --upgrade pip
-            pip install -e .
-        - name: "Build CMake project"
-          run: |
-            mkdir build
-            cd build
-            cmake ../examples/esp-blinky
-            cmake --build .
+          - uses: actions/checkout@v4
+          - name: "Install dependencies"
+            run: |
+              source /venv/bin/activate
+              python3 -m pip install .
+          - name: "Generate CMake build files"
+            working-directory: examples/cmake-single-app
+            run: |
+              source /venv/bin/activate
+              lobs export cmake-single-app.py cmake
+          - name: "Build CMake project"
+            working-directory: examples/cmake-single-app/lobs-project
+            run: |
+              cmake -B build .
+              cmake --build build
     build-esp:
         runs-on: ubuntu-latest
-        container:
-          image: espressif/idf:release-v5.5
+        container: espressif/idf:release-v5.5
+        defaults:
+          run:
+            shell: bash
         steps:
-        - uses: actions/checkout@v4
-        - name: "Install dependencies"
-          run: |
-            python -m pip install --upgrade pip
-            pip install -e .
-        - name: "Build ESP-IDF project"
-          run: |
-            cd examples/esp-blinky
-            idf.py build
+          - uses: actions/checkout@v4
+          - name: "Install dependencies"
+            run: |
+              source /opt/esp/entrypoint.sh
+              python3 -m pip install .
+          - name: "Generate ESP-IDF project files"
+            working-directory: examples/esp-blinky
+            run: |
+              source /opt/esp/entrypoint.sh
+              lobs export esp-blinky.py espidf
+          - name: "Build ESP-IDF project"
+            working-directory: examples/esp-blinky/lobs-project
+            run: |
+              source /opt/esp/entrypoint.sh
+              idf.py build
