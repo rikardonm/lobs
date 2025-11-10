@@ -23,6 +23,7 @@ classifiers = [
 dependencies = [
   "click ~= 8.3.0",
   "bigtree[image] ~= 1.0.2",
+  "pydantic ~= 2.12.2",
 ]
 
 [project.optional-dependencies]
