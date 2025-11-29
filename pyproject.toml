@@ -7,7 +7,7 @@ name = "py-lobs"
 dynamic = ["version"]
 description = 'lobs is a framework that aims to provide an easy application and library project generator.'
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 license = "MIT"
 keywords = []
 authors = [
@@ -16,7 +16,7 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -24,10 +24,12 @@ dependencies = [
   "click ~= 8.3.0",
   "bigtree[image] ~= 1.0.2",
   "pydantic ~= 2.12.2",
+  "filesizelib ~= 0.12.1",
+  "annotated-types ~= 0.7.0",
 ]
 
 [project.optional-dependencies]
-test = [
+dev = [
   "pytest ~= 9.0.0",
 ]
 
@@ -77,3 +79,6 @@ exclude_lines = [
 [tool.black]
 line-length = 120
 target-version = ['py312']
+
+[tool.flake8]
+max-line-length = 120

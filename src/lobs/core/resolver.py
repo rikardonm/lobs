@@ -37,40 +37,57 @@ class DAG(_DAG):
 
 class PackageResolver:
     def __init__(self, root: type[Package], target: Path) -> None:
-        self.root_klass = root
+        self.root = root
         self.target = target
-        self.processed: dict[type[Package], Node] = {}
-        self.tags_in_use: set[str] = set()
+        self.processed: dict[type[Package], tuple[Package, Node]] = {}
 
     def _reset(self) -> None:
         self.processed.clear()
-        self.tags_in_use.clear()
 
-    def recursively_resolve_package(self, klass: type[Package]) -> Node:
-        tag_was_used = klass.tag in self.tags_in_use
-        already_processed = klass in self.processed
-        if tag_was_used and not already_processed:
-            raise RuntimeError(f"Tag '{klass.tag}' is already in use by another package.")
-        if already_processed:
-            return self.processed[klass]
+    def recursively_resolve_package(self, current: type[Package]) -> tuple[Node, set[type[Package]], list[Exception]]:
+        print(f'Resolving package: {current.__module__}.{current.__qualname__}...')
+        unresolved: set[type[Package]] = set()
+        captured_exceptions: list[Exception] = []
+        if x := self.processed.get(current, None):
+            # So we mutate the package configuration when we encounter it again
+            # in a sort of "running" merge fashion.
+            # x[0]._intake_configuration(current)
+            return (x[1], unresolved, captured_exceptions)
 
-        current = klass()
         pkg_tgt = self.target / current.tag
         pkg_tgt.mkdir(parents=True, exist_ok=True)
 
-        current.configure(None)
-        current.prepare_files(pkg_tgt)
-        project = current.materialize(pkg_tgt)
+        inst = current()
 
-        node = Node(current, project, pkg_tgt)
-        self.processed[klass] = node
-        self.tags_in_use.add(klass.tag)
+        inst._prepare_files(pkg_tgt)  # pyright: ignore[reportPrivateUsage]
+        inst._validate_configuration()  # pyright: ignore[reportPrivateUsage]
+        project = inst._make_project(pkg_tgt)  # pyright: ignore[reportPrivateUsage]
 
-        for dep in project.get_dependencies():
-            child_node = self.recursively_resolve_package(dep)
-            node.append(child_node)
+        node = Node(inst, project, pkg_tgt)
+        self.processed[current] = (inst, node)
+        for dep in project.dependencies:
+            try:
+                # this may be a problem when we have circular dependencies? or when we try to debug it...
+                child_node, child_unresolved, child_exceptions = self.recursively_resolve_package(dep)
+                node.append(child_node)
+                unresolved |= child_unresolved
+                captured_exceptions.extend(child_exceptions)
+            except Exception as ex:
+                unresolved.add(dep)
+                captured_exceptions.append(ex)
+                print(f'  Could not resolve dependency {dep.__module__}.{dep.__qualname__}: {ex}')
 
-        return node
+        # Remove from unresolved if we were able to process it
+        unresolved -= set(self.processed.keys())
+
+        return (node, unresolved, captured_exceptions)
 
     def materialize_dag(self) -> Node:
-        return self.recursively_resolve_package(self.root_klass)
+        node, unresolved, captured_exceptions = self.recursively_resolve_package(self.root)
+        if unresolved:
+            print("Some packages could not be resolved:")
+            for ex in captured_exceptions:
+                print(f"  - {ex}")
+            unresolved_tags = ', '.join([x.tag for x in unresolved])
+            raise RuntimeError(f"The following packages could not be resolved: {unresolved_tags}")
+        return node

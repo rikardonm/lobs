@@ -14,6 +14,9 @@ The pillars for the library are:
 - Dependency fetching and version resolution is done by Python's package manager (e.g. pip)
 - Every package has only one library or application
 
+And the motivation is pretty straightforward: I have a problem that I'm tired of solving manually.
+Embedded applications declared in plain CMake do not play well with ESP's IDF, and vice-versa.
+So instead of writing if/else's we write a whole new package to wrap that mess somewhere I can't see!
 
 
 A simple C++ application example

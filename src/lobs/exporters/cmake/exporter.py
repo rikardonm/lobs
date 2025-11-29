@@ -2,11 +2,10 @@ import dataclasses
 import re
 import typing as t
 
-from lobs.core.exporter import BaseExporter
+from lobs.core.exporter import GenericExporter, ExporterConfiguration as _BaseConfig
 from lobs.core.resolver import Node
 from lobs.domains.cpp import project as cpp
 
-from lobs.core.configuration import ExporterConfiguration as _BaseConfig
 from . import syntax
 from .writer import CmakeFileWriter
 
@@ -16,14 +15,10 @@ class CmakeConfig(_BaseConfig):
     minimum_cmake_version: str = "3.22"
 
 
-class Exporter(BaseExporter):
+class Exporter(GenericExporter[CmakeConfig]):
     _resolved_packages: dict[Node, syntax.Library] = {}
 
-    def export(self) -> None:
-        self._config = CmakeConfig()
-        super().export()
-
-    def _export_node(self, node: Node) -> None:
+    def _export_node(self, node: Node, config: CmakeConfig) -> None:
         prj = node.project
         match prj:
             case cpp.SimpleManagedApplication():
@@ -55,7 +50,7 @@ class Exporter(BaseExporter):
 
         prj = writer.make_project(
             name=node.package.tag,
-            version=str(node.package.version),
+            version=str(node.package.version) if node.package.version else None,
             languages=["CXX"],
             **opt_args,
         )

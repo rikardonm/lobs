@@ -1,9 +1,8 @@
-from lobs import Package, Version, cpp, Path
+from lobs import Package, cpp, Path
 
 
 class LibA(
     Package,
-    version=Version(0, 0, 1),
     description="A sample configurable library.",
 ):
     app = cpp.project.SimpleLibrary(

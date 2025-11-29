@@ -1,12 +1,12 @@
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
-import click.testing
 import pytest
 
-from lobs import __main__ as main_cli
 from lobs.core.package.base import Package
-from lobs._machinery.modules import import_module
+from lobs.machinery.modules import import_module
 from lobs.core.resolver import PackageResolver
 from lobs.exporters.cmake.exporter import Exporter as CMakeExporter
 
@@ -71,20 +71,25 @@ def test_export_library(
     ids=["simple", "external"],
 )
 def test_export_cli(test_file: list[str]):
-    runner = click.testing.CliRunner()
+    # runner = click.testing.CliRunner()
     target_file = examples_dir.joinpath(*test_file)
     with tempfile.TemporaryDirectory() as _tmpdir:
         tmpdir = Path(_tmpdir)
         output_path = tmpdir / "lobs-project"
 
-        result = runner.invoke(
-            cli=main_cli.main,
-            args=[
-                'export',
+        # We can't use the click runner because it messes with our "smart" stateful classes
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "lobs",
+                "export",
                 str(target_file),
-                '--resolve-to',
+                "--resolve-to",
                 str(output_path),
-                'cmake',
+                "cmake",
             ],
+            capture_output=True,
+            text=True,
         )
-        assert result.exit_code == 0, result.output
+        assert result.returncode == 0, result.stdout + result.stderr

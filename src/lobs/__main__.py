@@ -1,3 +1,4 @@
+import contextlib
 import functools
 import typing as t
 from pathlib import Path
@@ -5,7 +6,7 @@ from pathlib import Path
 import click
 
 from lobs.core.package import base as pm
-from lobs._machinery.modules import import_module
+from lobs.machinery.modules import import_module
 from lobs import exporters
 from lobs.core.resolver import PackageResolver     # noqa: F401 register exporters
 
@@ -18,7 +19,7 @@ class _Base:
     _package_arg = click.argument(
         'package_path',
         required=True,
-        type=click.Path(exists=False, file_okay=True, dir_okay=False, readable=True, path_type=Path),
+        type=click.Path(exists=False, file_okay=True, dir_okay=True, readable=True, path_type=Path),
     )
     _resolve_to = click.option(
         '--resolve-to',
@@ -29,13 +30,18 @@ class _Base:
 
     @classmethod
     def __package_builder(cls, package_path: Path) -> type[pm.Package]:
-        print(f'Package: {package_path}')
-        if not package_path.is_absolute():
-            package_path = Path.cwd() / package_path
-        else:
-            package_path = package_path.absolute()
+        if str(package_path) == '.':
+            with contextlib.suppress(FileNotFoundError):
+                return cls.__package_builder(package_path.joinpath("__init__.py"))
+            with contextlib.suppress(FileNotFoundError):
+                return cls.__package_builder(package_path.joinpath("package.py"))
+            with contextlib.suppress(FileNotFoundError):
+                return cls.__package_builder(package_path.joinpath(package_path.name).with_suffix(".py"))
+            raise FileNotFoundError(f"Could not find a package file in directory {package_path}.")
+        package_path = package_path.absolute()
         if not package_path.exists():
             raise FileNotFoundError(f"Package file {package_path} does not exist.")
+        print(f'Package: {package_path}')
         project_package = pm.Package.capture_all_from_module(import_module('package_module', package_path))
         return project_package
 
@@ -72,7 +78,11 @@ class _Base:
 
 @click.group()
 def main():
-    """Lobs: A modern something system for C++ projects."""
+    """Lobs: A modern something system for C++ projects.
+
+    :param project_path: Path to the package file or directory containing the package. If '.' is provided,
+    the current directory is used. The package file can be named 'package.py', the directory's name or '__init__.py'.
+    """
     pass
 
 
