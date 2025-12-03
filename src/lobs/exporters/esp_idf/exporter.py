@@ -81,12 +81,12 @@ class Exporter(GenericExporter[EspIdfConfig]):
                     writer.list("EXTRA_COMPONENT_DIRS").append(*all_deps_paths)
 
             if self._config.config_flags:
-                sdk_cfg_path = output_file_path / "sdkconfig.default"
+                sdk_cfg_path = output_file_path / "sdkconfig.defaults"
                 sdkconfig.generate_file(self._config.config_flags, sdk_cfg_path)
                 if not sdk_cfg_path.is_absolute():
                     sdk_cfg_path = Path.cwd() / sdk_cfg_path
                 if not sdk_cfg_path.exists():
-                    raise FileNotFoundError(f"The specified sdkconfig.default file does not exist at {sdk_cfg_path}.")
+                    raise FileNotFoundError(f"The specified sdkconfig.defaults file does not exist at {sdk_cfg_path}.")
                 writer.list("SDKCONFIG_DEFAULTS").append(str(sdk_cfg_path))
 
             writer.variable("COMPONENTS").set([x.name for x in node.children] + list(config.esp_components))
