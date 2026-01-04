@@ -15,20 +15,32 @@ class Version:
 
     SEMVER_REGEX = re.compile(
         r'^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)'
-        r'(?:[-.](?P<extra>.+))?$'
+        r'(?:[-\.](?P<extra>.+))?$'
+    )
+    PY_VERSION_REGEX = re.compile(
+        r'^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)'
+        r'(?:[\.+](?P<extra>.+))?$'
     )
 
     @classmethod
     def parse(cls, version_str: str) -> t.Self:
-        match = cls.SEMVER_REGEX.match(version_str)
-        if not match:
-            raise ValueError(f"Invalid version string: {version_str}")
-        major = int(match.group('major'))
-        minor = int(match.group('minor'))
-        patch = int(match.group('patch'))
-        extra = match.group('extra')
+        m = cls.SEMVER_REGEX.match(version_str)
+        if m:
+            major = int(m.group('major'))
+            minor = int(m.group('minor'))
+            patch = int(m.group('patch'))
+            extra = m.group('extra')
+            return cls(major, minor, patch, extra)
 
-        return cls(major, minor, patch, extra)
+        m = cls.PY_VERSION_REGEX.match(version_str)
+        if m:
+            major = int(m.group('major'))
+            minor = int(m.group('minor'))
+            patch = 0
+            extra = m.group('extra')
+            return cls(major, minor, patch, extra)
+
+        raise ValueError(f"Invalid version string: {version_str}")
 
     def __str__(self) -> str:
         version = f"{self.major}.{self.minor}.{self.patch}"
