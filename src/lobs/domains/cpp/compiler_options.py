@@ -9,8 +9,10 @@ class CompilationFlags:
     Each attribute corresponds to a specific compilation flag. If the attribute is set to True, the flag is enabled.
 
     The attribute names follow the convention of starting with 'w_' to indicate warning flags.
-    This suffix shall be used when adding new flags dynamically,
+    This prefix shall be used when adding new flags dynamically,
     and will be replaced with '-W' when generating the actual compiler arguments.
+
+    Flags that do not have the suffix, will not be modified (other than replacing '_' with '-').
     """
     w_all: bool | None = None
     w_extra: bool | None = None
@@ -33,11 +35,23 @@ class CompilationFlags:
         return getattr(self, key)
 
     def __setitem__(self, key: str, value: bool | None) -> None:
-        if not key.startswith('w_'):
-            raise KeyError(f"Invalid compilation flag '{key}'. Must start with 'w_'.")
         setattr(self, key, value)
 
-    def get_all(self) -> list[dataclasses.Field[t.Any]]:
-        # although it would be very nice and clean to use `dataclasses.fields(self)`
-        # it does not easily allow us to dynamically add fields to the dataclass
-        return list(self.__dataclass_fields__.values())
+    @staticmethod
+    def _sanitize_key(key: str) -> tuple[str, str]:
+        _type, tail = key.split("_", maxsplit=1)
+        if not tail:
+            raise ValueError(f"Unexpected compile flag format!: {key}")
+        if len(_type) != 1:
+            raise ValueError(f"Unexpected compile flag type value: {_type}")
+        return (_type, tail.replace("_", "-"))
+
+    def get_all(self) -> dict[str, bool | None]:
+        return {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+
+    def get_split(self) -> list[tuple[str, str]]:
+        return [
+            self._sanitize_key(key)
+            for key, value in self.get_all().items()
+            if value
+        ]

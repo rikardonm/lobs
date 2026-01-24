@@ -124,14 +124,22 @@ class Exporter(GenericExporter[EspIdfConfig]):
             writer.set(syntax.Variable("CMAKE_CXX_STANDARD"), lib.cxx_standard)
             writer.set(syntax.Variable("CMAKE_CXX_STANDARD_REQUIRED"), True)
 
-        enabled_flags = [field.name for field in lib.compilation_flags.get_all() if lib.compilation_flags[field.name]]
+        enabled_flags: list[str] = []
+        for t_, f in lib.compilation_flags.get_split():
+            match t_:
+                case "w":
+                    enabled_flags.append(f"-W{f}")
+                case "f":
+                    enabled_flags.append(f"-f{f}")
+                case _:
+                    raise ValueError(f"Unable to convert flag {f} of type {t_}")
 
         if enabled_flags:
             writer.call(
                 "target_compile_options",
                 syntax.Variable("COMPONENT_LIB"),
                 "PRIVATE",
-                *(re.sub(r"^w_", "-W", x).replace("_", "-") for x in enabled_flags),
+                enabled_flags,
             )
 
         writer.write_to_dir(output_file_path)

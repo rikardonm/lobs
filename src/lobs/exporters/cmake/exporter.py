@@ -1,5 +1,4 @@
 import dataclasses
-import re
 import typing as t
 
 from lobs.core.exporter import GenericExporter, ExporterConfiguration as _BaseConfig
@@ -72,18 +71,22 @@ class Exporter(GenericExporter[CmakeConfig]):
                 # writer.add_subdirectory(dep.resolved_path)
                 writer.target_link_library(lib, self._resolved_packages[dep])
 
-        enabled_flags = [
-            field.name
-            for field in app.compilation_flags.get_all()
-            if app.compilation_flags[field.name]
-        ]
+        enabled_flags: list[str] = []
+        for t_, f in lib.compilation_flags.get_split():
+            match t_:
+                case "w":
+                    enabled_flags.append(f"-W{f}")
+                case "f":
+                    enabled_flags.append(f"-f{f}")
+                case _:
+                    raise ValueError(f"Unable to convert flag {f} of type {t_}")
 
         if enabled_flags:
             writer.call(
                 "target_compile_options",
                 prj.name,
                 "PRIVATE",
-                *(re.sub(r"^w_", "-W", x).replace("_", "-") for x in enabled_flags),
+                enabled_flags,
             )
 
         return writer
