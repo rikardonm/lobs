@@ -35,8 +35,6 @@ class _Base:
                 return cls.__package_builder(package_path.joinpath("__init__.py"))
             with contextlib.suppress(FileNotFoundError):
                 return cls.__package_builder(package_path.joinpath("package.py"))
-            with contextlib.suppress(FileNotFoundError):
-                return cls.__package_builder(package_path.joinpath(package_path.name).with_suffix(".py"))
             raise FileNotFoundError(f"Could not find a package file in directory {package_path}.")
         package_path = package_path.absolute()
         if not package_path.exists():
