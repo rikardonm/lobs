@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: MIT
 # flake8: noqa: F401
 # pyright: reportUnusedImport = false
-from .exporter import Exporter, CmakeConfig
+from .exporter import Exporter, CmakeConfig, CmakeBasedProject
 
 __all__ = [
     "Exporter",
     "CmakeConfig",
+    "CmakeBasedProject",
 ]

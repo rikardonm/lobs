@@ -26,6 +26,7 @@ dependencies = [
   "pydantic ~= 2.12.2",
   "filesizelib ~= 0.12.1",
   "annotated-types ~= 0.7.0",
+  "GitPython ~= 3.1.50",
 ]
 
 [project.optional-dependencies]

@@ -4,7 +4,6 @@ Issues to watch out for:
     - https://github.com/espressif/esp-idf/issues/7024
 """
 import dataclasses
-import re
 import typing as t
 from collections.abc import Sequence
 from pathlib import Path
@@ -14,6 +13,7 @@ from lobs.core.exporter import GenericExporter
 from lobs.core.resolver import Node
 from lobs.domains.cpp import project as cpp
 from lobs.domains.files import expand_sources
+from lobs.exporters.cmake import CmakeBasedProject
 from lobs.exporters.cmake import syntax as syntax
 from lobs.exporters.cmake.writer import CmakeFileWriter
 
@@ -44,13 +44,18 @@ class Exporter(GenericExporter[EspIdfConfig]):
         #   - fetch the current exporter configuration
         match node.project:
             case cpp.EmbeddedApplication():
-                self._generate_application(node, node.project, config, self.base_output_path)
                 # the application gets the top-level CMakeLists.txt
-                # app_writer.write_to_dir(self.base_output_path)
-
+                self._generate_application(node, node.project, config, self.base_output_path)
             case cpp.SimpleLibrary():
                 self._merge_config_flags(config)
                 self._generate_component(node, node.project, config, node.resolved_path)
+            case CmakeBasedProject():
+                self._merge_config_flags(config)
+                # A "pure" CMake project is compatible with the ESP-IDF framework
+                # the "caveat" is that the cmake file should be "prepared" to support espressif's customizations
+                # so the temporary-permanent fix is to just ignore that, and import it directly
+                # why? just because we can make it break somewhere else.
+                pass
             case _:
                 raise ValueError(
                     f"The ESP-IDF exporter does not support the selected target {node.project} on '{node.name}'."
