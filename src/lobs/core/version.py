@@ -19,7 +19,7 @@ class Version:
     )
     PY_VERSION_REGEX = re.compile(
         r'^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)'
-        r'(?:[\.+](?P<extra>.+))?$'
+        r'(?:[\.+](?:0\d+)(?P<extra>.+))?$'
     )
 
     @classmethod

@@ -83,7 +83,6 @@ class TestVersionParsing:
     @pytest.mark.parametrize("invalid_version", [
         "",                          # Empty string
         "1",                         # Missing components
-        "1.2",                       # Missing patch
         "v1.2.3",                    # Prefix not allowed
         "1.2.3-",                    # Trailing dash
         "01.2.3",                    # Leading zeros not allowed
@@ -103,6 +102,13 @@ class TestVersionParsing:
         """Test that parsing invalid versions raises ValueError."""
         with pytest.raises(ValueError, match="Invalid version string"):
             _ = Version.parse(invalid_version)
+
+    @pytest.mark.parametrize("py_ver", [
+        "1.2",
+    ])
+    def test_parse_valid_pyver_versions(self, py_ver: str):
+        """Test that parsing valid Python version strings works."""
+        _ = Version.parse(py_ver)
 
 
 class TestVersionStringRepresentation:
