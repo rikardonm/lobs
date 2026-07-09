@@ -86,7 +86,7 @@ class Exporter(GenericExporter[CmakeConfig]):
                 )
 
         enabled_flags: list[str] = []
-        for t_, f in lib.compilation_flags.get_split():
+        for t_, f in app.compilation_flags.get_split():
             match t_:
                 case "w":
                     enabled_flags.append(f"-W{f}")

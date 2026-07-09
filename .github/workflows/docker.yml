@@ -9,6 +9,11 @@ on:
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile:
+          - "base-cmake-gcc"
+          - "base-esp-idf-v5.5"
     permissions:
       contents: read
       packages: write
@@ -25,10 +30,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:docker"
-          file: base-cmake-gcc.Dockerfile
+          file: "${{ matrix.dockerfile }}.Dockerfile"
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/base-cmake-gcc:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/base-cmake-gcc:latest
+            ghcr.io/${{ github.repository }}/${{ matrix.dockerfile }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.dockerfile }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
