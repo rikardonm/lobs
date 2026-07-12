@@ -21,6 +21,16 @@ So instead of writing if/else's we write a whole new package to wrap that mess s
 
 A simple C++ application example
 
+
+https://github.com/rikardonm/lobs/blob/main/examples/cmake-single-app/cmake-single-app.py
+
+
+
+https://github.com/rikardonm/lobs/blob/main/examples/cmake-single-app/src/main.cpp
+
+
+
+
 ```python
 # simple-example.py
 from pathlib import Path
