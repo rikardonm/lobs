@@ -22,11 +22,10 @@ So instead of writing if/else's we write a whole new package to wrap that mess s
 A simple C++ application example
 
 
-https://github.com/rikardonm/lobs/blob/main/examples/cmake-single-app/cmake-single-app.py
+https://github.com/rikardonm/lobs/blob/a36c1bccf210d2071ccc21379935aa405212f325/examples/cmake-single-app/cmake-single-app.py#L1-L18
 
 
-
-https://github.com/rikardonm/lobs/blob/main/examples/cmake-single-app/src/main.cpp
+https://github.com/rikardonm/lobs/blob/main/examples/cmake-single-app/src/main.cpp#L1-L8
 
 
 
