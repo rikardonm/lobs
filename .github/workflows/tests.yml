@@ -1,64 +1,64 @@
 name: Tests
 
 on:
-    push:
-        branches: [ main ]
-    pull_request:
-        branches: [ main ]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    unit-tests:
-        runs-on: ubuntu-latest
-        container: python:3.13
-        steps:
-        - uses: actions/checkout@v4
-        - name: "Install dependencies"
-          run: python3.13 -m pip install ".[test]"
-        - name: "Run tests"
-          run: python3.13 -m pytest
-    build-cmake:
-        runs-on: ubuntu-latest
-        container: ghcr.io/${{ github.repository }}/base-cmake-gcc:latest
-        defaults:
-          run:
-            shell: bash
-        steps:
-          - uses: actions/checkout@v4
-          - name: "Install dependencies"
-            run: |
-              source /venv/bin/activate
-              python3.13 -m pip install .
-          - name: "Generate CMake build files"
-            working-directory: examples/cmake-single-app
-            run: |
-              source /venv/bin/activate
-              lobs export cmake-single-app.py cmake
-          - name: "Build CMake project"
-            working-directory: examples/cmake-single-app/lobs-project
-            run: |
-              cmake -B build .
-              cmake --build build
-    build-esp:
-        runs-on: ubuntu-latest
-        container: ghcr.io/${{ github.repository }}/base-esp-idf-v5.5:latest
-        defaults:
-          run:
-            shell: bash
-        steps:
-          - uses: actions/checkout@v4
-          - name: "Install dependencies"
-            run: |
-              source /opt/esp/entrypoint.sh
-              python3.13 -m pip install .
-          - name: "Generate ESP-IDF project files"
-            working-directory: examples/esp-blinky
-            run: |
-              source /opt/esp/entrypoint.sh
-              lobs export . espidf
-          - name: "Build ESP-IDF project"
-            working-directory: examples/esp-blinky
-            env:
-              IDF_TARGET: esp32
-            run: |
-              source /opt/esp/entrypoint.sh
-              idf.py -C lobs-project/ build
+  unit-tests:
+    runs-on: ubuntu-latest
+    container: python:3.13
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install dependencies"
+        run: python3.13 -m pip install ".[test]"
+      - name: "Run tests"
+        run: python3.13 -m pytest
+  build-cmake:
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}/base-cmake-gcc:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install dependencies"
+        run: |
+          source /venv/bin/activate
+          python3.13 -m pip install .
+      - name: "Generate CMake build files"
+        working-directory: examples/cmake-single-app
+        run: |
+          source /venv/bin/activate
+          lobs export cmake-single-app.py cmake
+      - name: "Build CMake project"
+        working-directory: examples/cmake-single-app/lobs-project
+        run: |
+          cmake -B build .
+          cmake --build build
+  build-esp:
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}/base-esp-idf-v5.5:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install dependencies"
+        run: |
+          source /opt/esp/entrypoint.sh
+          python3.13 -m pip install .
+      - name: "Generate ESP-IDF project files"
+        working-directory: examples/esp-blinky
+        run: |
+          source /opt/esp/entrypoint.sh
+          lobs export . espidf
+      - name: "Build ESP-IDF project"
+        working-directory: examples/esp-blinky
+        env:
+          IDF_TARGET: esp32
+        run: |
+          source /opt/esp/entrypoint.sh
+          idf.py -C lobs-project/ build

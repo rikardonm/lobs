@@ -2,6 +2,10 @@ name: Build Docker images
 
 on:
   push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
     paths:
       - docker/**
       - .github/workflows/docker.yml
