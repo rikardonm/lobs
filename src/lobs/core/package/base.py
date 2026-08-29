@@ -135,8 +135,13 @@ class Package:
     @classmethod
     def capture_all_from_module(cls, m: ModuleType) -> "type[Package]":
         ret: list[type[Package]] = [
-            x for _, x in inspect.getmembers(m)
-            if isinstance(x, type) and issubclass(x, Package) and x is not Package
+            obj for name, obj in inspect.getmembers(m)
+            if (
+                isinstance(obj, type)
+                and issubclass(obj, Package)
+                and obj is not Package
+                and not name.startswith('_')
+            )
         ]
         if not ret:
             raise RuntimeError("No packages found in the provided project file.")
