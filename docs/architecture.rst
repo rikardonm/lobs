@@ -13,9 +13,18 @@ The framework follows a multi-phase workflow to generate build configurations fr
 
 **Workflow Diagram**
 
-The workflow proceeds through consecutive phases: ::
+The workflow proceeds through consecutive phases:
 
-    Start [Create] Configure PrepareFiles => Materialize ==> Exporter [CMake.IDF]
+.. mermaid::
+   :caption: lobs Workflow Phases
+
+   flowchart LR
+       Start([Start]) --> Create[Create]
+       Create --> Configure[Configure]
+       Configure --> PrepareFiles[Prepare Files]
+       PrepareFiles --> Materialize[Materialize]
+       Materialize --> Export[Export]
+       Export -->|CMake, IDF| End([Build Output])
 
 Each phase feeds into the next, culminating in build system output.
 
@@ -235,17 +244,30 @@ Package dependencies are automatically resolved through Python's type system and
 +-------------------+-------------------------------+--------------------------------------------------+
 
 Dependency Resolution Flow
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
+.. mermaid::
+   :caption: Dependency Resolution Process
 
-   +---------------------+        +----------------+        +-----------------+
-   | Consumer Package    | -----> | Declare        | ---->  | Add Requirements|
-   +---------------------+        +----------------+        +-----------------+
-                                                |
-                                                v
-   +---------------------+        +----------------+        +------------------+
-   | Validate Constraints| <----  | Resolve        | <----  | Find Providers   |
-   +---------------------+        +----------------+        +------------------+
+   flowchart TB
+       subgraph Consumer
+           A[Consumer Package] --> B[Declare Requirements]
+       end
+       
+       subgraph Resolution
+           B --> C[Add Requirements]
+           C --> D{Find Providers}
+           D -->|Not Found E| F[Resolve & Validate]
+           D -->|Found| G[Validate Constraints]
+       end
+       
+       subgraph Validation
+           G --> H{Valid?}
+           H -->|Yes| I[All Satisfied!]
+           H -->|No| E([Error: Unsatisfied])
+       end
+       
+       F --> G
 
    
 File Generation Flow
