@@ -1,0 +1,104 @@
+/* Custom styles for lobs documentation */
+
+/* Improve code block styling */
+div.literal-block-wrapper {
+    margin: 1em 0;
+}
+
+code.literal {
+    border-radius: 3px;
+}
+
+/* Better table styling */
+.rst-content table.docutils {
+    border-collapse: collapse;
+}
+
+.rst-content table.docutils td,
+.rst-content table.docutils th {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+}
+
+/* Improve theme contrast */
+.rst-content .toctree-wrapper p.caption {
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Custom class highlighting for examples */
+.highlight-python,
+.highlight-cpp,
+.highlight-bash,
+.highlight-console {
+    background-color: #f8f9fa !important;
+    border-left: 3px solid #007bff;
+    padding: 1em;
+}
+
+/* Grid cards for features */
+.card-header h4 {
+    margin-bottom: 0.5rem;
+    color: #007bff;
+}
+
+/* Make mermaid diagrams more visible */
+figure.mermaid {
+    display: flex;
+    justify-content: center;
+    margin: 2em 0;
+}
+
+/* Better navigation sidebar */
+.wy-nav-side {
+    background-color: #2c3e50 !important;
+}
+
+.wy-menu-vertical a {
+    color: #bdc3c7;
+    padding: 0.4em 1em;
+}
+
+.wy-menu-vertical a:hover {
+    background-color: #34495e;
+    color: #fff;
+}
+
+.wy-side-nav-search {
+    background-color: #2c3e50 !important;
+}
+
+.wy-side-nav-search .wy-dropdown > a,
+.wy-side-nav-search > a {
+    color: #ecf0f1;
+}
+
+/* Improve admonition styling */
+.admonition-warning {
+    border-left-color: #ff9800 !important;
+}
+
+.admonition-todo {
+    border-left-color: #2196f3 !important;
+}
+
+/* Better Sphinx design grid cards */
+.sphinx-theme-grid-cols-1 {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Index section styling */
+.section-docs > h1,
+.section-home > h1,
+.section-getting-started > h1 {
+    color: #2c3e50;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+/* Footer improvements */
+.wy-footer .rst-versions {
+    background-color: #2980b9;
+}
