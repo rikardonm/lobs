@@ -72,6 +72,13 @@ class TestVersionParsing:
         assert version.minor == 888
         assert version.patch == 777
 
+    def test_parse_short_pep440_style(self):
+        """Test parsing a PEP 440 style version."""
+        version = Version.parse("1.2.dev4+g5678")
+        assert version.major == 1
+        assert version.minor == 2
+        assert version.extra == "dev4+g5678"
+
     def test_parse_pep440_style(self):
         """Test parsing a PEP 440 style version."""
         version = Version.parse("1.2.3.dev4+g5678")
