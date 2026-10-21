@@ -13,8 +13,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 # -- Project information -----------------------------------------------------
 
 project = 'lobs'
-copyright = '2025, ricardo'
-author = 'ricardo'
+copyright = '2025-2026, Ricardo Marchesan'
+author = 'Ricardo Marchesan'
 release = os.environ.get('VERSION', '0.0.1')
 
 # -- General configuration ---------------------------------------------------
@@ -67,7 +67,7 @@ htmlhelp_basename = 'lobsdoc'
 # -- Options for LaTeX output ------------------------------------------------
 
 latex_elements = {
-    'papersize': 'letterpaper',
+    'papersize': 'a4paper',
     'preamble': r'''
 \usepackage{fancyhdr}
 \pagestyle{fancy}
