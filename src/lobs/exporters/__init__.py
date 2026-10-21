@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: MIT
 # flake8: noqa: F401
 # pyright: reportUnusedImport = false
-from . import cmake, esp_idf
+from . import cmake, esp_idf, manifest
 
 __all__ = [
     "cmake",
     "esp_idf",
+    "manifest",
 ]

@@ -107,7 +107,7 @@ def visualize(package: type[pm.Package], resolve_to: Path):
 @click.argument(
     'exporter-tag',
     required=True,
-    type=click.Choice(['cmake', 'espidf'], case_sensitive=False),
+    type=click.Choice(['cmake', 'espidf', 'manifest'], case_sensitive=False),
 )
 def export(package: type[pm.Package], resolve_to: Path, exporter_tag: str):
     """Export the projects to the desired build system format."""
@@ -116,6 +116,8 @@ def export(package: type[pm.Package], resolve_to: Path, exporter_tag: str):
             klass = exporters.cmake.Exporter
         case 'espidf':
             klass = exporters.esp_idf.Exporter
+        case 'manifest':
+            klass = exporters.manifest.Exporter
         case _:
             raise ValueError(f"Exporter with tag '{exporter_tag}' is not known.")
 

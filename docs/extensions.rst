@@ -307,6 +307,22 @@ Here's an example that generates a JSON manifest:
            )
 
 
+Manifest Exporter
+-----------------
+
+The built-in ``manifest`` exporter writes one JSON file per package to the
+resolved output directory. Each file contains the package tag, version,
+description, project type, and dependency tags. Generate manifests with:
+
+.. code-block:: bash
+
+   lobs export my-project.py manifest
+
+The output is validated using the Pydantic
+:py:class:`~lobs.exporters.manifest.Manifest` model. Its JSON Schema is
+available at :download:`manifest.schema.json`.
+
+
 Best Practices for Custom Exporters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
