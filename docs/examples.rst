@@ -276,15 +276,7 @@ Resolution Flow
 Working with pip
 ~~~~~~~~~~~~~~~~~
 
-Since dependencies are resolved through Python's package ecosystem:
-
-.. code-block:: bash
-
-   # Install required dependencies first
-   python -m pip install nlohmann-json3-snapshot
-
-   # Then run your lobs application
-   python external_package.py export cmake
+Since dependencies are resolved through Python's package ecosystem, one can use `pip` to install packages, from any package registry, git URL and even from a local directory, in cases of a multiple-app repo.
 
 
 Project Composition Example
@@ -330,15 +322,6 @@ Outputs:
    ├── CMakeLists.txt                          # Top-level project config
    ├── utility_lib/CMakeLists.txt              # Library build file  
    └── myapp/CMakeLists.txt                    # Application build file
-
-
-Best Practices
---------------
-
-- **Single Responsibility**: Each package represents one logical unit (library or application)
-- **Explicit Paths**: Use ``Path(__file__)`` for robust path handling
-- **Version Pinning**: Declare versions to ensure consistent builds
-- **Clear Descriptions**: Provide meaningful descriptions for better discoverability
 
 
 See Also
