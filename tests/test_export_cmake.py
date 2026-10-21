@@ -88,6 +88,7 @@ def test_export_cli(test_file: list[str]):
                 "--resolve-to",
                 str(output_path),
                 "cmake",
+                "--no-reconfigure",
             ],
             capture_output=True,
             text=True,
