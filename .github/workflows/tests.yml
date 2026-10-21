@@ -28,7 +28,7 @@ jobs:
         run: |
           source /venv/bin/activate
           python3.13 -m pip install .
-      - name: "Generate CMake build files"
+      - name: "Generate and configure CMake build files"
         working-directory: examples/cmake-single-app
         run: |
           source /venv/bin/activate
@@ -36,7 +36,6 @@ jobs:
       - name: "Build CMake project"
         working-directory: examples/cmake-single-app/lobs-project
         run: |
-          cmake -B build .
           cmake --build build
   build-esp:
     runs-on: ubuntu-latest
@@ -52,6 +51,8 @@ jobs:
           python3.13 -m pip install .
       - name: "Generate ESP-IDF project files"
         working-directory: examples/esp-blinky
+        env:
+          IDF_TARGET: esp32
         run: |
           source /opt/esp/entrypoint.sh
           lobs export . espidf

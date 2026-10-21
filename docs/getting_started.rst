@@ -94,10 +94,12 @@ Now build your application using standard CMake commands:
 
 .. code-block:: console
 
-   $ cd cmake-build
-   $ cmake .
-   $ cmake --build .
-   $ ./hello
+   $ cmake --build lobs-project/build
+   $ ./lobs-project/build/hello
+
+The ``export`` command automatically reconfigures the project (``cmake`` for the cmake exporter,
+``idf.py reconfigure`` for ESP-IDF). Pass ``--no-reconfigure`` to skip this step; the executables can be
+aliased with the ``LOBS_CMAKE_INVOKER`` and ``LOBS_ESPIDF_INVOKER`` environment variables.
 
 Expected output:
 
@@ -254,12 +256,11 @@ Here's a complete workflow from project definition to running the application:
    python myproject.py export cmake
    -- Project: hello-py
 
-   # 2. Configure CMake
-   cd cmake-build && cmake .
+   # 2. CMake is configured automatically by the export (skip with --no-reconfigure)
    -- Configuring done...
 
    # 3. Build
-   cmake --build .
+   cmake --build lobs-project/build
    -- Building... [100%]
 
    # 4. Run

@@ -73,5 +73,8 @@ class GenericExporter(abc.ABC, t.Generic[TCFG]):
             config = self._get_config_for_node(node, self.config_type, node_gen_assets_path)
             self._export_node(node, config)
 
+    def reconfigure(self) -> None:
+        """Reconfigure the exported project using the target build system. Does nothing by default."""
+
 
 BaseExporter = GenericExporter[ExporterConfiguration]

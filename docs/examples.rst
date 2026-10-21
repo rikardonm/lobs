@@ -66,11 +66,9 @@ This will generate:
 
 .. code-block:: bash
 
-   # Configure the project
-   cmake -B build .
-
+   # The export already configured the project (skip with --no-reconfigure)
    # Build the application
-   cmake --build build
+   cmake --build lobs-project/build
 
    # Run the executable
    ./build/cmake-single-app
@@ -170,9 +168,8 @@ Application Using Both Library and External Dependencies:
    # Export the project
    python external_package.py export cmake
 
-   # Configure, build, run
-   cd cmake-build
-   cmake . && cmake --build . && ./externalapp
+   # Build, run (the export already reconfigured the project)
+   cmake --build lobs-project/build && ./lobs-project/build/externalapp
 
 
 This configuration:

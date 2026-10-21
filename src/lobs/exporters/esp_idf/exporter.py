@@ -4,6 +4,9 @@ Issues to watch out for:
     - https://github.com/espressif/esp-idf/issues/7024
 """
 import dataclasses
+import os
+import shlex
+import subprocess
 import typing as t
 from collections.abc import Sequence
 from pathlib import Path
@@ -30,6 +33,13 @@ class EspIdfConfig(_BaseConfig):
 
 class Exporter(GenericExporter[EspIdfConfig]):
     CMAKE_MIN_VERSION = "3.22"
+
+    def reconfigure(self) -> None:
+        """Run idf.py reconfigure on the exported project; the script can be aliased with LOBS_ESPIDF_INVOKER."""
+        cmd = shlex.split(os.environ.get("LOBS_ESPIDF_INVOKER", "idf.py"))
+        cmd += ["-C", str(self.base_output_path), "reconfigure"]
+        self.logger.info("Reconfiguring: %s", " ".join(cmd))
+        subprocess.run(cmd, check=True, env=os.environ.copy())
 
     def _merge_config_flags(self, config: EspIdfConfig) -> None:
         """Merge de node's configuration flags into the top-level configuration."""

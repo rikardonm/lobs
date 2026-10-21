@@ -89,12 +89,11 @@ Export to CMake and Build:
    $ python simple-example.py export cmake
    Project: simple-example.py
 
-   $ # Configure and build with cmake
-   $ cmake -B build .
+   $ # The export automatically reconfigures with cmake (use --no-reconfigure to skip)
    -- Configuring done
    -- Generating done
-   
-   $ cmake --build build
+
+   $ cmake --build lobs-project/build
 
 
 Output:
