@@ -2,6 +2,9 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/py-lobs.svg)](https://pypi.org/project/py-lobs)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-lobs.svg)](https://pypi.org/project/py-lobs)
+[![Docs](https://img.shields.io/badge/docs-github%20pages-blue)](https://rikardonm.github.io/lobs/)
+
+Documentation: <https://rikardonm.github.io/lobs/>
 
 `lobs` is a framework that aims to provide an easy application and library project generator.
 The simple drivers for this are the need to have a single C++ source file used in a project,
