@@ -42,7 +42,7 @@ docs = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/rikardonm/lobs#readme"
+Documentation = "https://rikardonm.github.io/lobs/"
 Issues = "https://github.com/rikardonm/lobs/issues"
 Source = "https://github.com/rikardonm/lobs"
 
