@@ -1,7 +1,7 @@
 {
   "properties": {
-    "project": {
-      "title": "Project",
+    "project_tag": {
+      "title": "Project Tag",
       "type": "string"
     },
     "version": {
@@ -41,7 +41,7 @@
     }
   },
   "required": [
-    "project",
+    "project_tag",
     "type",
     "dependencies"
   ],

@@ -110,7 +110,7 @@ def test_export_manifest():
 
         manifest_file = output_path / f"{root.package.tag}.json"
         manifest = Manifest.model_validate_json(manifest_file.read_text(encoding="utf-8"))
-        assert manifest.project == root.package.tag
+        assert manifest.project_tag == root.package.tag
         assert manifest.version is None
         assert manifest.type == type(root.project).__name__
         assert manifest.dependencies == []

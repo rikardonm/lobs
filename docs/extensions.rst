@@ -291,7 +291,7 @@ Here's an example that generates a JSON manifest:
 
        def _export_node(self, node: Node, config: ManifestConfig) -> None:
            manifest_data = {
-               "project": node.package.tag,
+               "project_tag": node.package.tag,
                "version": str(node.package.version),
                "description": node.package.description,
                "type": type(node.project).__name__,

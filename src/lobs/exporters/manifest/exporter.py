@@ -11,7 +11,7 @@ from lobs.core.resolver import Node
 
 
 class Manifest(BaseModel):
-    project: str
+    project_tag: str
     version: str | None = None
     description: str | None = None
     type: str
@@ -26,7 +26,7 @@ class ManifestConfig(_BaseConfig):
 class Exporter(GenericExporter[ManifestConfig]):
     def _export_node(self, node: Node, config: ManifestConfig) -> None:
         manifest = Manifest(
-            project=node.package.tag,
+            project_tag=node.package.tag,
             version=str(node.package.version) if node.package.version else None,
             description=node.package.description,
             type=type(node.project).__name__,
