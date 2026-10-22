@@ -39,6 +39,7 @@ docs = [
   "sphinx-design >= 0.6.1",
   "myst-parser >= 3.0.1",
   "sphinx-autobuild >= 2025.8.25",
+  "sphinxcontrib-mermaid ~= 2.1.1",
 ]
 
 [project.urls]

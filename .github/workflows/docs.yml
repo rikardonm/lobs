@@ -29,11 +29,16 @@ jobs:
           path: docs/_build/html
 
   deploy:
-    needs: build
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
+    needs: build
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{steps.deployment.outputs.page_url}}
     steps:
-      - id: deployment
+      - name: Deploy artifact
+        id: deployment
         uses: actions/deploy-pages@v4
