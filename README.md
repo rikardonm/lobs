@@ -60,18 +60,19 @@ app.project.compilation_flags['w_extra'] = True
 app.project.compilation_flags['w_comment'] = True
 ```
 
-And use it like so:
+And use it like so (the build system is automatically reconfigured after the export;
+use `--no-reconfigure` to skip it, and `LOBS_CMAKE_INVOKER` / `LOBS_ESPIDF_INVOKER` to alias the
+`cmake` / `idf.py` executables):
 
 ```
 ~/lobs » lobs simple-example.py export cmake
 Project: simple-example.py
 
-~/lobs » cmake -B build .
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/ricardo/git/lobs/build
+-- Build files have been written to: /home/ricardo/git/lobs/lobs-project/build
 
-~/lobs » cmake --build build
+~/lobs » cmake --build lobs-project/build
 [ 50%] Building CXX object CMakeFiles/example-app.dir/main.cpp.o
 [100%] Linking CXX executable example-app
 [100%] Built target example-app

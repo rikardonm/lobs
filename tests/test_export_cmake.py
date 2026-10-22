@@ -88,8 +88,35 @@ def test_export_cli(test_file: list[str]):
                 "--resolve-to",
                 str(output_path),
                 "cmake",
+                "--no-reconfigure",
             ],
             capture_output=True,
             text=True,
         )
         assert result.returncode == 0, result.stdout + result.stderr
+
+
+def _fake_invoker(tmp_path: Path) -> Path:
+    script = tmp_path / "fake_invoker.py"
+    script.write_text(
+        "import sys, pathlib\n"
+        "pathlib.Path(sys.argv[1]).write_text(' '.join(sys.argv[2:]))\n"
+    )
+    return script
+
+
+@pytest.mark.parametrize("no_reconfigure", [False, True], ids=["reconfigure", "no-reconfigure"])
+def test_cli_export_reconfigure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, no_reconfigure: bool):
+    marker = tmp_path / "marker.txt"
+    script = _fake_invoker(tmp_path)
+    monkeypatch.setenv("LOBS_CMAKE_INVOKER", f'"{sys.executable}" "{script}" "{marker}"')
+    target_file = examples_dir / "cmake-single-app" / "cmake-single-app.py"
+    output_path = tmp_path / "lobs-project"
+    args = [sys.executable, "-m", "lobs", "export", str(target_file), "--resolve-to", str(output_path), "cmake"]
+    if no_reconfigure:
+        args.append("--no-reconfigure")
+    result = subprocess.run(args, capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert marker.exists() != no_reconfigure
+    if not no_reconfigure:
+        assert f"-S {output_path}" in marker.read_text()

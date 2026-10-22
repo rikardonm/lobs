@@ -1,4 +1,7 @@
 import dataclasses
+import os
+import shlex
+import subprocess
 import typing as t
 
 from lobs.core.package.base import Project, Package
@@ -26,6 +29,13 @@ class CmakeConfig(_BaseConfig):
 
 class Exporter(GenericExporter[CmakeConfig]):
     _resolved_packages: dict[Node, syntax.Library] = {}
+
+    def reconfigure(self) -> None:
+        """Run CMake to configure the exported project; the executable can be aliased with LOBS_CMAKE_INVOKER."""
+        cmd = shlex.split(os.environ.get("LOBS_CMAKE_INVOKER", "cmake"))
+        cmd += ["-S", str(self.base_output_path), "-B", str(self.base_output_path / "build")]
+        self.logger.info("Reconfiguring: %s", " ".join(cmd))
+        subprocess.run(cmd, check=True, env=os.environ.copy())
 
     def _export_node(self, node: Node, config: CmakeConfig) -> None:
         prj = node.project

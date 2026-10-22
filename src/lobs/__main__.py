@@ -109,8 +109,18 @@ def visualize(package: type[pm.Package], resolve_to: Path):
     required=True,
     type=click.Choice(['cmake', 'espidf'], case_sensitive=False),
 )
-def export(package: type[pm.Package], resolve_to: Path, exporter_tag: str):
-    """Export the projects to the desired build system format."""
+@click.option(
+    '--no-reconfigure',
+    is_flag=True,
+    default=False,
+    help="Skip reconfiguring the project with the build system after a successful export.",
+)
+def export(package: type[pm.Package], resolve_to: Path, exporter_tag: str, no_reconfigure: bool):
+    """Export the projects to the desired build system format.
+
+    Unless --no-reconfigure is given, the build system is reconfigured afterwards (cmake / idf.py reconfigure).
+    The executables can be aliased with LOBS_CMAKE_INVOKER and LOBS_ESPIDF_INVOKER.
+    """
     match exporter_tag.lower():
         case 'cmake':
             klass = exporters.cmake.Exporter
@@ -122,3 +132,9 @@ def export(package: type[pm.Package], resolve_to: Path, exporter_tag: str):
     root = PackageResolver(package, resolve_to).materialize_dag()
     exp = klass(root, resolve_to)
     exp.export()
+    if not no_reconfigure:
+        exp.reconfigure()
+
+
+if __name__ == "__main__":
+    main()
