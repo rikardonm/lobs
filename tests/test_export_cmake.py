@@ -8,9 +8,15 @@ import pytest
 from lobs.core.package.base import Package
 from lobs.machinery.modules import import_module
 from lobs.core.resolver import PackageResolver
+from lobs.domains.cpp.project import SimpleManagedApplication
 from lobs.exporters.cmake.exporter import Exporter as CMakeExporter
+from lobs.exporters.manifest import Exporter as ManifestExporter, Manifest
 
 from ._config import examples_dir
+
+
+class ManifestTestPackage(Package, tag="ManifestExporterTestPackage"):
+    app = SimpleManagedApplication()
 
 
 __ref_dot_simple = """strict digraph G {
@@ -93,3 +99,40 @@ def test_export_cli(test_file: list[str]):
             text=True,
         )
         assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_export_manifest():
+    with tempfile.TemporaryDirectory() as _tmpdir:
+        output_path = Path(_tmpdir) / "lobs-project"
+        root = PackageResolver(ManifestTestPackage, output_path).materialize_dag()
+
+        ManifestExporter(root, output_path).export()
+
+        manifest_file = output_path / f"{root.package.tag}.json"
+        manifest = Manifest.model_validate_json(manifest_file.read_text(encoding="utf-8"))
+        assert manifest.project_tag == root.package.tag
+        assert manifest.version is None
+        assert manifest.type == type(root.project).__name__
+        assert manifest.dependencies == []
+
+
+def test_export_manifest_cli():
+    target_file = examples_dir / "cmake-single-app" / "cmake-single-app.py"
+    with tempfile.TemporaryDirectory() as _tmpdir:
+        output_path = Path(_tmpdir) / "lobs-project"
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "from lobs.__main__ import main; main()",
+                "export",
+                str(target_file),
+                "--resolve-to",
+                str(output_path),
+                "manifest",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert (output_path / "CMakeSingleAppExample.json").is_file()

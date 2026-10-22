@@ -241,6 +241,7 @@ Available Exporters:
 
 - ``cmake`` - Generate CMake build files
 - ``espidf`` - Generate ESP-IDF components
+- ``manifest`` - Generate JSON package manifests
 
 
 Example Workflow

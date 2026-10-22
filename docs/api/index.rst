@@ -104,6 +104,18 @@ ESP-IDF target configuration support.
    :show-inheritance:
 
 
+Manifest Exporter Module
+------------------------
+
+JSON manifest generation.
+
+.. automodule:: lobs.exporters.manifest
+   :members:
+   :undoc-members:
+   :synopsis: JSON manifest exporter for lobs projects
+   :show-inheritance:
+
+
 Utilities Module
 ----------------
 
