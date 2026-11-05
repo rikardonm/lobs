@@ -8,7 +8,7 @@ import click
 from lobs.core.package import base as pm
 from lobs.machinery.modules import import_module
 from lobs import exporters
-from lobs.core.resolver import PackageResolver     # noqa: F401 register exporters
+from lobs.core.resolver import PackageResolver, ResolveError  # noqa: F401 register exporters
 
 _T = t.TypeVar('_T')
 _P = t.ParamSpec('_P')
@@ -119,6 +119,12 @@ def export(package: type[pm.Package], resolve_to: Path, exporter_tag: str):
         case _:
             raise ValueError(f"Exporter with tag '{exporter_tag}' is not known.")
 
-    root = PackageResolver(package, resolve_to).materialize_dag()
-    exp = klass(root, resolve_to)
-    exp.export()
+    try:
+        root = PackageResolver(package, resolve_to).materialize_dag()
+        exp = klass(root, resolve_to)
+        exp.export()
+    except ResolveError as re:
+        click.echo("Some packages could not be resolved:")
+        for pkg, error in re.errors.items():
+            click.echo(f" - {pkg.ljust(20)} - {error}")
+        raise click.Abort() from re

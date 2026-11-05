@@ -3,7 +3,7 @@ import typing as t
 
 from lobs.core.package.base import Project, Package
 from lobs.core.exporter import GenericExporter, ExporterConfiguration as _BaseConfig
-from lobs.core.resolver import Node
+from lobs.core.dag import Node
 from lobs.domains.cpp import project as cpp
 
 from . import syntax

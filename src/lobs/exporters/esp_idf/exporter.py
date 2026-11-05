@@ -10,7 +10,7 @@ from pathlib import Path
 
 from lobs.core.exporter import ExporterConfiguration as _BaseConfig
 from lobs.core.exporter import GenericExporter
-from lobs.core.resolver import Node
+from lobs.core.dag import Node
 from lobs.domains.cpp import project as cpp
 from lobs.domains.files import expand_sources
 from lobs.exporters.cmake import CmakeBasedProject
