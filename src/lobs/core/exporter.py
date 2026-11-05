@@ -23,7 +23,7 @@ class GenericExporter(abc.ABC, t.Generic[TCFG]):
     def __init_subclass__(cls) -> None:
         # Get the generic configuration type
         try:
-            cls.config_type: type[TCFG] = t.get_args(cls.__orig_bases__[0])[0]
+            cls.config_type: type[TCFG] = t.get_args(cls.__orig_bases__[0])[0]  # pyright: ignore[reportAttributeAccessIssue, reportUnknownMemberType]
         except (AttributeError, IndexError):
             raise RuntimeError("Could not determine the ExporterConfiguration type for the exporter.")
         return super().__init_subclass__()
