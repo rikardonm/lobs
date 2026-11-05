@@ -38,7 +38,7 @@ class DownloadablePackage:
 @dataclass
 class GitRepoPackage:
     repo_url: str
-    ref: str
+    ref: str | None
 
     def resolve_to(self, target: Path) -> None:
         if not target.exists():
@@ -66,3 +66,12 @@ class GitRepoPackage:
                 f"Checked out ref {_tag} does not match expected {self.ref}."
                 " Clean up the project to rebuild."
             )
+
+
+@dataclass
+class LocalDirectory:
+    path: Path
+
+    def resolve_to(self, target: Path) -> None:
+        if not self.path.exists():
+            raise ValueError(f"The local path to be used does not exist! Using {self.path}")
