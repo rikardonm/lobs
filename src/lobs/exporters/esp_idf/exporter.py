@@ -26,6 +26,9 @@ class EspIdfConfig(_BaseConfig):
     """List of ESP-IDF components to include in the project."""
     config_flags: sdkconfig.FT = t.cast(sdkconfig.FT, dataclasses.field(default_factory=dict))
     """List of configuration flags required for the project."""
+    embedded_files: list[Path] = t.cast(list[Path], dataclasses.field(default_factory=list))
+    """List of file paths that shall be embedded in the binary.
+    They will be sourced directly (without copy or symlinks)."""
 
 
 class Exporter(GenericExporter[EspIdfConfig]):
@@ -117,12 +120,14 @@ class Exporter(GenericExporter[EspIdfConfig]):
         src_dirs = writer.set(syntax.Variable("src_dirs"), {str(src.parent) for src in all_files})
         inc_dirs = writer.set(syntax.Variable("inc_dirs"), (str(x) for x in lib.public_includes))
         deps = writer.set(syntax.Variable("deps"), [x.name for x in node.children] + list(config.esp_components))
+        embeddings = writer.set(syntax.Variable("embeddings"), config.embedded_files)
 
         writer.call(
             "idf_component_register",
             SRC_DIRS=src_dirs,
             INCLUDE_DIRS=inc_dirs,
             REQUIRES=deps,
+            EMBED_TXTFILES=embeddings,
         )
 
         with writer.group():
