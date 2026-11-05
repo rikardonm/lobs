@@ -4,7 +4,7 @@ import typing as t
 
 from lobs.machinery.logger import module_logger
 if t.TYPE_CHECKING:
-    from lobs.core.resolver import Node
+    from lobs.core.dag import Node
 else:
     Node = t.Any
 

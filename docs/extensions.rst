@@ -217,7 +217,7 @@ Here is a minimal exporter template:
    from pathlib import Path
 
    from lobs.core.exporter import GenericExporter, ExporterConfiguration
-   from lobs.core.resolver import Node
+   from lobs.core.dag import Node
 
    @dataclass
    class MyCustomConfig(ExporterConfiguration):
