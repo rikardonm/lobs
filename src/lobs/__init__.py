@@ -9,7 +9,7 @@ import typing as t
 import annotated_types as ant
 from filesizelib import Storage, StorageUnit
 
-from lobs.core.package.base import Package, Parameter
+from lobs.core.package.base import Package, Parameter, ParameterGroup
 from lobs.core.version import Version
 from lobs.domains import cpp
 from lobs.version import __version__, __version_tuple__
@@ -26,6 +26,7 @@ __all__ = [
     "ant",
     "Package",
     "Parameter",
+    "ParameterGroup",
     "Version",
     "cpp",
     "exporter",

@@ -39,6 +39,9 @@ class PackageResolver:
 
         inst = current()
 
+        # First check if all the configuration is fine and dandy
+        inst._evaluate_requirements()  # pyright: ignore[reportPrivateUsage]
+        # Then we generate the needed files
         inst._prepare_files(pkg_tgt)  # pyright: ignore[reportPrivateUsage]
         inst._validate_configuration()  # pyright: ignore[reportPrivateUsage]
         project = inst._make_project(pkg_tgt)  # pyright: ignore[reportPrivateUsage]

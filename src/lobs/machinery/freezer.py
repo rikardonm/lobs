@@ -3,6 +3,26 @@ from contextlib import contextmanager
 import typing as t
 
 
+class FrozenMutationError(AttributeError):
+    def __init__(self, target: type | object, variable: str, value: t.Any):
+        super().__init__()
+        self.target = target
+        self.variable = variable
+        self.value = value
+
+    def __str__(self) -> str:
+        if isinstance(self.target, type):
+            name = f"{self.target.__module__}.{self.target.__name__}"
+            k = f"The class {name}"
+        else:
+            t = type(self.target)
+            k = f"The object {self.target} of type {t.__module__}.{t.__name__}"
+        return (
+            f"{k} is frozen and does not accept updates!"
+            f" Attempted to set '{self.variable}' to '{self.value}'."
+        )
+
+
 def freeze(obj: object) -> None:
     """Inhibit further modifications to the given object."""
 
@@ -11,7 +31,7 @@ def freeze(obj: object) -> None:
         setattr(obj, '__old_setter__', old_setter)
 
         def frozen_setattr(self: object, name: t.Any, value: t.Any) -> None:
-            raise AttributeError(f"Cannot modify frozen instance of {self.__class__.__name__}")
+            raise FrozenMutationError(self, name, value)
 
         obj.__setattr__ = frozen_setattr.__get__(obj, obj.__class__)  # Bind the method to the instance
 
