@@ -12,10 +12,10 @@ from .writer import CmakeFileWriter
 
 @dataclasses.dataclass
 class CmakeBasedProject(Project):
-    """A (usually) imported C++ project is natively based on CMake."""
+    """An (usually) imported C++ project is natively based on CMake."""
     dependencies: list[type[Package]] = dataclasses.field(default_factory=list)  # type: ignore
 
-    def _get_dependencies(self) -> t.Sequence[Package]:
+    def _get_dependencies(self) -> t.Sequence[type[Package]]:
         return self.dependencies
 
 
