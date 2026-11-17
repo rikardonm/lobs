@@ -135,19 +135,20 @@ class ParameterGroup:
 
 
 class _FrozenPackage(type):
-    __is_frozen__ = True
+    __is_frozen__ = False
 
     def __setattr__(self, name: str, value: t.Any) -> None:
-        if not self.__is_frozen__:
+        # Calls here are made by the class type
+        if not self.__is_frozen__ or name == '__is_frozen__':
             return super().__setattr__(name, value)
         raise FrozenMutationError(self, name, value)
 
 
 class Package(ParameterGroup, metaclass=_FrozenPackage):
-    __is_frozen__ = False
     __known_tags__: dict[str, "type[Package]"] = {}
 
     def __setattr__(self, name: str, value: t.Any) -> None:
+        # Calls here are made by the class instance
         if not self.__is_frozen__:
             return super().__setattr__(name, value)
         raise FrozenMutationError(self, name, value)
@@ -165,6 +166,7 @@ class Package(ParameterGroup, metaclass=_FrozenPackage):
         :param version: The version of the package.
         :param tag: An optional tag for the package. If not provided, defaults to the class name.
         """
+        cls.__is_frozen__ = False
         super().__init_subclass__()
         cls.version = version
         """The version of the package."""
