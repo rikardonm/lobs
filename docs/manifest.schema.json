@@ -1,0 +1,50 @@
+{
+  "properties": {
+    "project_tag": {
+      "title": "Project Tag",
+      "type": "string"
+    },
+    "version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Version"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "type": {
+      "title": "Type",
+      "type": "string"
+    },
+    "dependencies": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Dependencies",
+      "type": "array"
+    }
+  },
+  "required": [
+    "project_tag",
+    "type",
+    "dependencies"
+  ],
+  "title": "Manifest",
+  "type": "object"
+}
