@@ -86,12 +86,12 @@ class Parameter(t.Generic[T]):
     def requirements(self) -> list[tuple["type[Package]", ant.BaseMetadata]]:
         return self._requirements
 
-    def require(self, requester: "Package | type[Package]", query: ant.BaseMetadata) -> None:
+    def add_requirement(self, requester: "Package | type[Package]", query: ant.BaseMetadata) -> None:
         if isinstance(requester, Package):
             requester = type(requester)
         self._requirements.append((requester, query))
 
-    def consume(self, owner: "Package | type[Package]", value: T) -> T | None:
+    def own_value(self, owner: "Package | type[Package]", value: T) -> T | None:
         if self._owner is not None:
             raise RuntimeError(f"Parameter already owned by {self._owner}; cannot be consumed by {owner}.")
         if isinstance(owner, Package):
@@ -242,9 +242,9 @@ class Package(ParameterGroup, metaclass=_FrozenPackage):
     @classmethod
     def require(cls, param: Parameter[T], query: ant.BaseMetadata | T) -> None:
         if isinstance(query, ant.BaseMetadata):
-            param.require(cls, query)
+            param.add_requirement(cls, query)
         else:
-            param.consume(cls, query)
+            param.own_value(cls, query)
 
 
 class Project:
