@@ -1,6 +1,7 @@
 import contextlib
 import functools
 import logging
+import os
 import sys
 import typing as t
 from pathlib import Path
@@ -16,6 +17,8 @@ from lobs.core.resolver import PackageResolver, ResolveError  # noqa: F401 regis
 _T = t.TypeVar('_T')
 _P = t.ParamSpec('_P')
 _R = t.TypeVar('_R', covariant=True)
+
+_DEBUG_SHOW_EXECPTION_TRACE = os.getenv('LOBS_DEBUG_SHOW_EXCEPTION_TRACE', None) is not None
 
 
 class _Base:
@@ -85,6 +88,8 @@ class _Base:
                 raise
             except Exception as ex:
                 click.echo(f"Failed to execute command: {ex}")
+                if _DEBUG_SHOW_EXECPTION_TRACE:
+                    raise
                 raise click.Abort() from ex
 
         functools.update_wrapper(_func, func)
