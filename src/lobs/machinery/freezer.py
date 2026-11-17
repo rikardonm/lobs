@@ -60,7 +60,5 @@ def context(obj: object, keep_frozen: bool = False) -> t.Generator[object, None,
     try:
         yield obj
     finally:
-        if keep_frozen:
-            return
-        if not was_frozen:
+        if not keep_frozen and not was_frozen:
             unfreeze(obj)
